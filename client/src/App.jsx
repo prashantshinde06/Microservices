@@ -5,7 +5,7 @@ export default function App() {
   const [getDataResult, setGetDataResult] = useState("");
 
   // Send data to Spring Boot
-   const API_URL_BOOT = `${window.location.protocol}//${window.location.hostname}:9090`;
+   const API_URL_BOOT = `${window.location.protocol}//${window.location.hostname}:9191`;
   const handleSend = async () => {
     try {
       const response = await fetch(`${API_URL_BOOT}/api/data/save`, {
