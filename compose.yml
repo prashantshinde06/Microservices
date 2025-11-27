@@ -1,0 +1,62 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Prashant2932
+      MYSQL_DATABASE: userdata
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - mern-net
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  backend-app:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: backend-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mern-net
+    env_file:
+      - ./server/.env
+    ports:
+      - "5001:4200"
+
+  helloservice:
+    build:
+      context: ./helloservice
+      dockerfile: Dockerfile
+    container_name: helloservice
+    networks:
+      - mern-net
+    ports:
+      - "8080:9191"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  web-app:
+    image: ./client
+    container_name: web-app
+    networks:
+      - mern-net
+    ports:
+      - "5000:3000"
+
+volumes:
+  mysql-data:
+
+
+networks:
+  mern-net:
+    driver: bridge
